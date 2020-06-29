@@ -1,2 +1,2 @@
 # Public-API-Request-Project
-This project utilizes fetch API requests to retrieve 12 users at a time from the Random User Generator Public API.  
+This project utilizes fetch API requests to retrieve 12 users at a time from the Random User Generator Public API. These 12 users are employees from random start-up companies. When an employee's card is clicked, a modal window appears with more specific information on the employee. The modals can be navigated with next and previous buttons and a close modal button.  Users can also search for specific users on the page in the search bar. 
