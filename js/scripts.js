@@ -172,7 +172,7 @@ function compare(search, names) {
     let inputString = searchValue.toString().toLowerCase();
 
     //LOOP TO SEE IF MATCHES AND DISPLAYS IF IT DOES
-    for (let i = 0; i < names.length; i++) {
+    for (let i = 0; i < names.length; i += 1) {
         let name = names[i].querySelector('h3');
         let nameString = name.textContent.toString().toLowerCase();
         let matching = nameString.indexOf(inputString);
