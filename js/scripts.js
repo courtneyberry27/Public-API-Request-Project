@@ -70,39 +70,48 @@ function createModal(data, i) {
     const user = data[i];
     let bday = user.dob.date;
     let dob = bday.split("T")[0];
-    const closeBtn = document.getElementById("modal-close-btn");
-    const btnDiv = document.createElement('div');
-    const next = document.getElementById("modal-next");
-    const previous = document.getElementById("modal-prev");
+    let year = dob.slice(0, 4);
+    let month = dob.slice(5, 7);
+    let day = dob.slice(8, 10);
+    dob = `${month}/${day}/${year}` //correct bday format
     const modalDiv = document.createElement('div');
-
-    //APPENDS AND SPECIFIES ELEMENT QUALITIES
     body.appendChild(modalDiv);
     modalDiv.className = "modal-container";
-    dob = dob.split("-").reverse().join("/"); //only gets relevant bday info
-    btnDiv.className = "modal-btn-container";
-    modalDiv.appendChild(btnDiv);
-
-    //DYNAMIC HTML FOR MODAL NAV BUTTONS SECTION
-    btnDiv.innerHTML =
-        `<button type="button" id="modal-prev" class="modal-prev btn">Prev</button>
-     <button type="button" id="modal-next" class="modal-next btn">Next</button>`;
-
 
     //SETTING UP DYNAMIC HTML
     modalDiv.innerHTML =
         `<div class="modal">
-       <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
-        <div class="modal-info-container">
-          <img class="modal-img" src=${user.picture.large} alt="profile picture">
-           <h3 id="name" class="modal-name cap">${user.name.first} ${user.name.last}</h3>
-           <p class="modal-text">${user.email}</p>
-           <p class="modal-text cap">${user.location.city}</p>
-           <hr>
-           <p class="modal-text">${user.cell}</p>
-           <p class="modal-text">${user.location.street.number} ${user.location.street.name}, ${user.location.city}, ${user.location.state} ${user.location.postcode}</p>
-           <p class="modal-text">Birthday: ${dob}</p>
-				 </div>`;
+    <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
+     <div class="modal-info-container">
+       <img class="modal-img" src=${user.picture.large} alt="profile picture">
+        <h3 id="name" class="modal-name cap">${user.name.first} ${user.name.last}</h3>
+        <p class="modal-text">${user.email}</p>
+        <p class="modal-text cap">${user.location.city}</p>
+        <hr>
+        <p class="modal-text">${user.cell}</p>
+        <p class="modal-text">${user.location.street.number} ${user.location.street.name}, ${user.location.city}, ${user.location.state} ${user.location.postcode}</p>
+        <p class="modal-text">Birthday: ${dob}</p>
+              </div>`;
+
+
+    //CLOSE BUTTON EVENT LISTENER AND CREATION
+    const closeBtn = document.getElementById("modal-close-btn");
+
+    closeBtn.addEventListener('click', (event) => {
+        modalDiv.remove();
+    });
+
+    //BUTTON SECTION FOR NEXT AND PREVIOUS
+    const btnDiv = document.createElement('div');
+    btnDiv.className = "modal-btn-container";
+    modalDiv.appendChild(btnDiv);
+
+    btnDiv.innerHTML =
+        `<button type="button" id="modal-prev" class="modal-prev btn">Prev</button>
+     <button type="button" id="modal-next" class="modal-next btn">Next</button>`;
+
+    const next = document.getElementById("modal-next");
+    const previous = document.getElementById("modal-prev");
 
     //NEXT/PREVIOUS BUTTON FUNCTIONALITY
     if (data[i + 1] != null) {
@@ -117,17 +126,13 @@ function createModal(data, i) {
         previous.style.display = "none";
     }
 
-    //EVENT LISTENERS            
-    closeBtn.addEventListener('click', (event) => {
-        modalDiv.remove();
-    });
-
-    next.addEventListener('click', (event) => {
+    //EVENT LISTENERS FOR NAV BUTTONS          
+    next.addEventListener('click', (e) => {
         modalDiv.remove();
         createModal(data, i + 1);
     });
 
-    previous.addEventListener('click', (event) => {
+    previous.addEventListener('click', (e) => {
         modalDiv.remove();
         createModal(data, i - 1);
     });
@@ -139,49 +144,46 @@ function createModal(data, i) {
  ***************************/
 function createSearch() {
     const searchForm = document.createElement('form');
-    const searchInput = document.getElementById('search-input');
-    const searchBtn = document.getElementById('search-submit');
-    const userCards = document.querySelectorAll('.card');
     searchForm.action = '#';
     searchForm.method = 'get';
-    searchContainer.appendChild(searchForm);
-
     //DYNAMIC HTML FOR SEARCH BAR AND SUBMIT BTN
     searchForm.innerHTML =
         `<input type="search" id="search-input" class="search-input" placeholder="Search...">
    <input type="submit" value="&#x1F50D;" id="search-submit" class="search-submit">`;
+    searchContainer.appendChild(searchForm);
+
+    const userCards = document.querySelectorAll('.card');
+    const searchInput = document.getElementById('search-input');
+    const searchBtn = document.getElementById('search-submit');
+
+    function compare(search, names) {
+        let searchValue = search.value;
+        let inputString = searchValue.toString().toLowerCase();
+
+        //LOOP TO SEE IF MATCHES AND DISPLAYS IF IT DOES
+        for (let i = 0; i < names.length; i += 1) {
+            let name = names[i].querySelector('h3');
+            let nameString = name.textContent.toString().toLowerCase();
+            let matching = nameString.indexOf(inputString);
+
+            if (matching != (-1)) {
+                names[i].style.display = '';
+            } else {
+                names[i].style.display = 'none';
+            }
+        }
+
+    }
+
+    //EVENT LISTENERS
+    searchBtn.addEventListener('click', (e) => {
+        e.target.preventDefault();
+        compare(searchInput, userCards);
+    });
 
     //DYNAMIC SEARCH FOR DISPLAYING RESULTS AS YOU ENTER CHARACTERS
     searchInput.addEventListener('keyup', () => {
         compare(searchInput, userCards);
     });
-
-    //EVENT LISTENERS
-    searchBtn.addEventListener('click', (event) => {
-        event.preventDefault();
-        compare(searchInput, userCards);
-    });
-
-}
-
-/************************** 
- * COMPARE INPUT TO USERS SECTION
- ***************************/
-function compare(search, names) {
-    let searchValue = search.value;
-    let inputString = searchValue.toString().toLowerCase();
-
-    //LOOP TO SEE IF MATCHES AND DISPLAYS IF IT DOES
-    for (let i = 0; i < names.length; i += 1) {
-        let name = names[i].querySelector('h3');
-        let nameString = name.textContent.toString().toLowerCase();
-        let matching = nameString.indexOf(inputString);
-
-        if (matching != (-1)) {
-            names[i].style.display = '';
-        } else {
-            names[i].style.display = 'none';
-        }
-    }
 
 }
